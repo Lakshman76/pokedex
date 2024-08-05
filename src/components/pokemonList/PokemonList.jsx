@@ -6,6 +6,7 @@ import {
   HiOutlineChevronDoubleLeft,
   HiOutlineChevronDoubleRight,
 } from "react-icons/hi";
+import toast from "react-hot-toast";
 
 const PokemonList = () => {
   const [pokemonList, setPokemonList] = useState([]);
@@ -17,15 +18,16 @@ const PokemonList = () => {
   const [prevUrl, setPrevUrl] = useState("");
   const [nextUrl, setNextUrl] = useState("");
 
-  async function downloadPokemons() {
+  async function getPokemons() {
     const response = await axios.get(pokedexUrl ? pokedexUrl : DEFAULT_URL);
-    const pokemonResults = response.data.results;
     
+    const pokemonResults = response.data.results;
+
     setPrevUrl(response.data.previous);
     setNextUrl(response.data.next);
     const pokemonPromise = pokemonResults.map((pokemon) =>
       axios.get(pokemon.url)
-    );    
+    );
     const pokemonListData = await axios.all(pokemonPromise);
     const pokemonFinalList = pokemonListData.map((pokemonData) => {
       const pokemon = pokemonData.data;
@@ -40,7 +42,12 @@ const PokemonList = () => {
   }
 
   useEffect(() => {
-    downloadPokemons();
+    // getPokemons() returns promise so that i directly used inside toast
+    toast.promise(getPokemons(), {
+      loading: "Wait! Fetching new Pokemon",
+      success: "Successfully fetched new Pokemon",
+      error: "Failed to fetch Pokemon"
+    })
   }, [pokedexUrl]);
 
   return (
