@@ -18,7 +18,7 @@ const PokemonList = () => {
   const [prevUrl, setPrevUrl] = useState("");
   const [nextUrl, setNextUrl] = useState("");
 
-  async function getPokemons() {
+  async function getAllPokemons() {
     const response = await axios.get(pokedexUrl ? pokedexUrl : DEFAULT_URL);
     
     const pokemonResults = response.data.results;
@@ -43,7 +43,7 @@ const PokemonList = () => {
 
   useEffect(() => {
     // getPokemons() returns promise so that i directly used inside toast
-    toast.promise(getPokemons(), {
+    toast.promise(getAllPokemons(), {
       loading: "Wait! Fetching new Pokemon",
       success: "Successfully fetched new Pokemon",
       error: "Failed to fetch Pokemon"
@@ -63,7 +63,7 @@ const PokemonList = () => {
       </div>
       <div className="pokemon-list">
         {pokemonList.map((pokemon) => (
-          <Pokemon key={pokemon.id} name={pokemon.name} url={pokemon.image} />
+          <Pokemon key={pokemon.id} name={pokemon.name} url={pokemon.image} id={pokemon.id}/>
         ))}
       </div>
       <div className="footer-nav">
