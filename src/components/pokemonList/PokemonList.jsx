@@ -9,22 +9,20 @@ import {
 import toast from "react-hot-toast";
 
 const PokemonList = () => {
-  const [pokemonList, setPokemonList] = useState([]);
   const DEFAULT_URL = "https://pokeapi.co/api/v2/pokemon";
 
-  const [pokedexUrl, setPokedexUrl] = useState(
-    "https://pokeapi.co/api/v2/pokemon"
-  );
-  const [prevUrl, setPrevUrl] = useState("");
-  const [nextUrl, setNextUrl] = useState("");
+  const [pokemonListState, setPokemonListState] = useState({
+    pokedexUrl: DEFAULT_URL,
+    pokemonList: [],
+    prevUrl: DEFAULT_URL,
+    nextUrl: DEFAULT_URL,
+  });
 
   async function getAllPokemons() {
-    const response = await axios.get(pokedexUrl ? pokedexUrl : DEFAULT_URL);
-    
+    const response = await axios.get(
+      pokemonListState.pokedexUrl ? pokemonListState.pokedexUrl : DEFAULT_URL
+    );
     const pokemonResults = response.data.results;
-
-    setPrevUrl(response.data.previous);
-    setNextUrl(response.data.next);
     const pokemonPromise = pokemonResults.map((pokemon) =>
       axios.get(pokemon.url)
     );
@@ -38,7 +36,12 @@ const PokemonList = () => {
         types: pokemon.types,
       };
     });
-    setPokemonList(pokemonFinalList);
+    setPokemonListState( {
+      ...pokemonListState,
+      pokemonList: pokemonFinalList,
+      prevUrl: response.data.previous,
+      nextUrl: response.data.next,
+    });
   }
 
   useEffect(() => {
@@ -46,31 +49,64 @@ const PokemonList = () => {
     toast.promise(getAllPokemons(), {
       loading: "Wait! Fetching new Pokemon",
       success: "Successfully fetched new Pokemon",
-      error: "Failed to fetch Pokemon"
-    })
-  }, [pokedexUrl]);
+      error: "Failed to fetch Pokemon",
+    });
+  }, [pokemonListState.pokedexUrl]);
 
   return (
     <div className="pokemon-list-wrapper">
       <div className="pokemon-list-header">Pokemon List</div>
       <div className="header-nav">
-        <button onClick={() => setPokedexUrl(prevUrl)}>
+        <button
+          onClick={() =>
+            setPokemonListState({
+              ...pokemonListState,
+              pokedexUrl: pokemonListState.prevUrl,
+            })
+          }
+        >
           <HiOutlineChevronDoubleLeft /> prev
         </button>
-        <button onClick={() => setPokedexUrl(nextUrl)}>
+        <button
+          onClick={() =>
+            setPokemonListState({
+              ...pokemonListState,
+              pokedexUrl: pokemonListState.nextUrl,
+            })
+          }
+        >
           next <HiOutlineChevronDoubleRight />
         </button>
       </div>
       <div className="pokemon-list">
-        {pokemonList.map((pokemon) => (
-          <Pokemon key={pokemon.id} name={pokemon.name} url={pokemon.image} id={pokemon.id}/>
+        {pokemonListState.pokemonList.map((pokemon) => (
+          <Pokemon
+            key={pokemon.id}
+            name={pokemon.name}
+            url={pokemon.image}
+            id={pokemon.id}
+          />
         ))}
       </div>
       <div className="footer-nav">
-        <button onClick={() => setPokedexUrl(prevUrl)}>
+        <button
+          onClick={() =>
+            setPokemonListState({
+              ...pokemonListState,
+              pokedexUrl: pokemonListState.prevUrl,
+            })
+          }
+        >
           <HiOutlineChevronDoubleLeft /> prev
         </button>
-        <button onClick={() => setPokedexUrl(nextUrl)}>
+        <button
+          onClick={() =>
+            setPokemonListState({
+              ...pokemonListState,
+              pokedexUrl: pokemonListState.nextUrl,
+            })
+          }
+        >
           next <HiOutlineChevronDoubleRight />
         </button>
       </div>
