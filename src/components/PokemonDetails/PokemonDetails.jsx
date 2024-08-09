@@ -2,10 +2,13 @@ import "./PokemonDetails.css";
 import { Link, useParams } from "react-router-dom";
 import { MdArrowBackIos } from "react-icons/md";
 import usePokemon from "../../hooks/usePokemon";
+import Pokemon from "../pokemon/Pokemon";
 
 const PokemonDetails = () => {
   const { id } = useParams();
-  const [pokemonDetails] = usePokemon(id);
+  const [pokemonDetails, pokemonListState] = usePokemon(id);
+  console.log(pokemonListState);
+
   return (
     <>
       <Link to="/" className="back">
@@ -36,6 +39,23 @@ const PokemonDetails = () => {
           </div>
         </div>
       )}
+      <div className="related-pokemons">
+        <h1>Related Pokemons</h1>
+        <div className="related-pokemons-wrapper">
+          {pokemonListState.pokemonList.length > 0 ? (
+            pokemonListState.pokemonList.map((pokemon) => (
+              <Pokemon
+                name={pokemon.name}
+                key={pokemon.id}
+                url={pokemon.image}
+                id={pokemon.id}
+              />
+            ))
+          ) : (
+            <h3>Loading....</h3>
+          )}
+        </div>
+      </div>
     </>
   );
 };
