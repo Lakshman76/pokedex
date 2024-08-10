@@ -4,17 +4,15 @@ import { MdArrowBackIos } from "react-icons/md";
 import usePokemon from "../../hooks/usePokemon";
 import Pokemon from "../pokemon/Pokemon";
 
-const PokemonDetails = () => {
-  const { id } = useParams();
-  const [pokemonDetails, pokemonListState] = usePokemon(id);
-  console.log(pokemonListState);
+const PokemonDetails = ({ pokemonName }) => {
+  const [pokemonDetails, pokemonListState] = usePokemon(pokemonName);
 
   return (
     <>
-      <Link to="/" className="back">
+      {!pokemonName && <Link to="/" className="back">
         <MdArrowBackIos />
         Back to Pokedex
-      </Link>
+      </Link>}
       {pokemonDetails && (
         <div className="pokemonDetails-wrapper">
           <div className="pokemonDetails-img">
