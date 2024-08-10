@@ -2,8 +2,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import getAllPokemons from "../utils/getAllPokemons";
+import { useParams } from "react-router-dom";
 
-function usePokemon(id) {
+function usePokemon(pokemonName) {
+  const { id } = useParams();
   const POKEMON_DEFAULT_URL = "https://pokeapi.co/api/v2/pokemon/";
   const [pokemonDetails, setPokemonDetails] = useState(null);
   const [pokemonListState, setPokemonListState] = useState({
@@ -14,7 +16,7 @@ function usePokemon(id) {
   });
 
   async function getPokemonDetails(id) {
-    const response = await axios.get(POKEMON_DEFAULT_URL + id);
+    const response = await axios.get(POKEMON_DEFAULT_URL + (pokemonName ? pokemonName : id));
     const pokemon = response.data;
     setPokemonDetails({
       name: pokemon.name,
@@ -43,7 +45,7 @@ function usePokemon(id) {
       error: "Failed to fetch Pokemon details",
     });
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-  }, [id]);
+  }, [id, pokemonName]);
   return [pokemonDetails, pokemonListState];
 }
 
